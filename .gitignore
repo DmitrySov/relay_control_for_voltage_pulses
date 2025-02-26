@@ -1,0 +1,18 @@
+# Исключить папку сборки
+Debug/
+Release/
+
+# Исключить сгенерированные файлы CubeMX
+.mxproject
+.cproject
+.project
+.settings/
+
+# Исключить временные файлы
+*.o
+*.d
+*.su
+*.map
+*.elf
+*.bin
+*.hex
