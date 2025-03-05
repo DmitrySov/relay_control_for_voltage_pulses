@@ -4,17 +4,48 @@
  *  Created on: Jan 5, 2025
  *      Author: Dmitry
  */
-#include "main.h"
+#include "button.h"
 
 uint8_t flag_key1_press = 1;
 uint8_t flag_key1_wait = 1;
 uint32_t time_key1_press = 0;
+uint8_t flag_read_button = 0;
 
 static volatile uint8_t number = 0;
 
 /*
  * Чтение кнопки, с учетом дребезга
  */
+
+void test_read_button(void){
+
+	if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) == GPIO_PIN_SET && flag_key1_press) // подставить свой пин
+	{
+			flag_key1_press = 0;
+			flag_key1_wait = 0;
+			time_key1_press = HAL_GetTick();
+	}
+
+	if(!flag_key1_wait && (HAL_GetTick() - time_key1_press) > 100)
+	{
+			if( HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0 == GPIO_PIN_SET) )
+			{
+					flag_key1_wait = 1;
+					flag_read_button = 1;
+			}
+			else
+			{
+					flag_key1_wait = 1;
+					flag_key1_press = 1;
+			}
+	}
+
+	if(!flag_key1_press && (HAL_GetTick() - time_key1_press) > 300)
+	{
+			flag_key1_press = 1;
+	}
+
+}
 void read_button(void){
 
 	if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) == GPIO_PIN_SET && flag_key1_press) // подставить свой пин

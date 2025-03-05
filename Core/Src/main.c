@@ -18,7 +18,8 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
+#include "stdio.h"
+#include <stdbool.h>
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "lcd1602_i2c.h"
@@ -47,6 +48,10 @@ TIM_HandleTypeDef htim1;
 extern uint8_t flag_key1_press;
 extern uint8_t flag_key1_wait;
 extern uint32_t time_key1_press;
+
+extern uint8_t flag_read_button;
+uint8_t button_count_P = 0;
+char buffer_P [15] = {0,};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -96,10 +101,20 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   lcd1602_Init(&lcd1602_Handle, &hi2c1, PCF8574_ADDRESS);
-  lcd1602_SetCursor(&lcd1602_Handle, 2, 1);
-  lcd1602_Print(&lcd1602_Handle, "Hello world!");
-  HAL_Delay(2000);
-  lcd1602_DisplayShift(&lcd1602_Handle, ShiftRight);
+  lcd1602_SetCursor(&lcd1602_Handle, 0, 1);
+ /* lcd1602_Print(&lcd1602_Handle, "P=80%");
+  lcd1602_SetCursor(&lcd1602_Handle, 6, 1);
+  lcd1602_Print(&lcd1602_Handle, "t=1ms");
+  lcd1602_SetCursor(&lcd1602_Handle, 12, 1);*/
+
+  snprintf(buffer_P, sizeof(buffer_P), "P= %d%%", button_count_P);
+  lcd1602_Print(&lcd1602_Handle, buffer_P);
+
+  /*switch(button_count){
+  	  	case 1:
+		lcd1602_Clear(&lcd1602_Handle);
+		lcd1602_Print(&lcd1602_Handle, "P=80%");
+  }*/
  // lcd1602_Clear(&lcd1602_Handle);
   /* USER CODE END 2 */
 
@@ -107,6 +122,17 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  test_read_button();
+
+		  if(flag_read_button == 1){
+			  flag_read_button = 0;
+			  button_count_P = button_count_P + 5;
+			  if(button_count_P > 95){button_count_P = 5;}
+			  snprintf(buffer_P, sizeof(buffer_P), "P= %d%%", button_count_P);
+			  lcd1602_Clear(&lcd1602_Handle);
+			  lcd1602_SetCursor(&lcd1602_Handle, 0, 1);
+			  lcd1602_Print(&lcd1602_Handle, buffer_P);
+		  }
 
 
 	  //click_action(1000, 2000, 5000, 300);
